@@ -1,0 +1,91 @@
+name: Build and test the CPP and Java benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_cpp:
+    if: github.event.pull_request.draft == false
+    runs-on: [self-hosted, cpp]
+    container:
+      image: ghcr.io/little-big-h/docker-image:main
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+      - name: "Run init script"
+        run: source /usr/local/bin/build-init.sh ${{ github.job }}
+      - name: "Build CPP code"
+        run: |
+          mkdir Release && cd Release \
+          && cmake \
+            -DCMAKE_STATIC_LINKER_FLAGS="-pthread" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-pthread"  \
+            -DCMAKE_EXE_LINKER_FLAGS="-pthread" \
+            -DCMAKE_C_FLAGS_RELEASE="-O3 -DNDEBUG -march=native -pthread" \
+            -DCMAKE_CXX_FLAGS_RELEASE="-O3 -DNDEBUG -march=native -pthread" \
+            -DCMAKE_BUILD_TYPE=Release .. \
+          && cmake --build . --target catch2 -- -j8 \
+          && cmake --build . --target googlebenchmark -- -j8 \
+          && cmake --build . -- -j8
+        working-directory: ${{ github.workspace }}/CppBenchmark
+      - name: "Run tests"
+        run: ./Tests
+        working-directory: ${{ github.workspace }}/CppBenchmark/Release
+      - name: "Run benchmark"
+        run: ./Benchmarks
+        working-directory: ${{ github.workspace }}/CppBenchmark/Release
+
+  build_java:
+    if: github.event.pull_request.draft == false
+    runs-on: [self-hosted, java]
+    container:
+      image: ghcr.io/little-big-h/docker-image:main
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+      - name: "Run init script"
+        run: source /usr/local/bin/build-init.sh ${{ github.job }}
+      - name: "Build Java code"
+        run: mvn -q install
+        working-directory: ${{ github.workspace }}/JavaBenchmark
+      - name: "Run benchmarks"
+        run: java -jar target/benchmarks.jar -w 1 -wi 1 -r 1 -f 1 -i 5 -bm avgt -tu ns
+        working-directory: ${{ github.workspace }}/JavaBenchmark
+
+  generate_report:
+    if: github.event.pull_request.draft == false
+    runs-on: [self-hosted, report]
+    container:
+      image: ghcr.io/little-big-h/docker-image:main
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+        # We need to set the safe git directory as reporting relies on git-ls
+        # See actions/checkout#766
+      - name: "Set the GH workspace as a safe git directory"
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: "Run init script"
+        run: source /usr/local/bin/build-init.sh ${{ github.job }}
+      - name: "Copy script in place"
+        run: cp /usr/local/bin/generate_report.py ./report_script.py
+      - name: "Run script to generate report"
+        run: ./report_script.py
+      - name: "Convert report to pdf"
+        run: |
+          enscript -p tmp.ps ./out/report.txt
+          ps2pdf tmp.ps ./out/report.pdf
+      - name: "Change report name to include the commit hash"
+        run: mv ./out/report.pdf ./out/report_${{ github.sha }}.pdf
+      - name: "Publish report as artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: submission-report-${{ github.sha }}
+          path: ./out/report_${{ github.sha }}.pdf
