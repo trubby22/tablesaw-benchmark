@@ -6,3 +6,5 @@
 !pom.xml
 
 !src/main/java/uk/ac/ic/doc/spe/MyBenchmark.java
+!src/main/java/uk/ac/ic/doc/spe/MyStandardTableSliceGroup.java
+!src/main/java/uk/ac/ic/doc/spe/MySummarizer.java
