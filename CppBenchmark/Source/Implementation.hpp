@@ -11,14 +11,18 @@
 
 class Slice {
 public:
-  Slice(rapidcsv::Document *t, std::vector<int> s) : table(t), selection(s) {}
+  Slice(rapidcsv::Document *t, std::vector<size_t> s) : table(t), selection(s) {}
 
   void set_name(std::string n) {
     name = n;
   }
+
+  std::vector<size_t> get_selection() {
+    return selection;
+  }
 private:
   rapidcsv::Document *table;
-  std::vector<int> selection;
+  std::vector<size_t> selection;
   std::string name;
 };
 
@@ -35,7 +39,7 @@ public:
 
   std::vector<Slice> split_on(std::string columnName) {
     std::vector<Slice> res{};
-    std::map<std::string, std::vector<int>> selection_map{};
+    std::map<std::string, std::vector<size_t>> selection_map{};
     std::map<std::string, std::string> slice_name_map{};
     std::vector<std::string> column = table.GetColumn<std::string>(columnName);
 
@@ -44,7 +48,7 @@ public:
       std::string string_key = "";
       string_key += column[i];
       byte_array_list += std::to_string(byte_array_list.size()) + column[i];
-      std::vector<int> *selection = &selection_map[byte_array_list];
+      std::vector<size_t> *selection = &selection_map[byte_array_list];
       selection->push_back(i);
       selection_map[byte_array_list] = *selection;
       slice_name_map[byte_array_list] = string_key;
@@ -56,6 +60,10 @@ public:
       res.push_back(slice);
     }
     return res;
+  }
+
+  rapidcsv::Document get_table() {
+    return table;
   }
 
 private:
