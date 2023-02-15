@@ -2,7 +2,7 @@ Java benchmark
 
 A Java benchmark was developed for the StandardTableSliceGroup::splitOn method. Due to technical difficulties only the enclosing Summarizer::by method was benchmarked (a commented-out non-working fine grained solution is also provided). The following hypothesis was proposed: the execution time is linear with respect to the number of sub-tables generated. The equivalent characteristic equation is shown below.
 T = s + p * n
-, where s - time spent in the enclosing method and iterating over the input table, n - number of sub-tables generated, p - positive constant factor. The reasoning behind the hypothesis is that there’s a for-loop at the end of splitOn that iterates over the generated sub-tables and more sub-tables mean more time spent in the for-loop.
+, where s - time spent in the enclosing method and iterating over the input table, n - number of sub-tables generated, p - positive constant factor. The reasoning behind the hypothesis is that there is a for-loop at the end of splitOn that iterates over the generated sub-tables and more sub-tables mean more time spent in the for-loop.
 
 Before each run the date column is replaced with a shuffled column of dates such that there are (k / 100) * (num_of_rows) dates evenly distributed over all the rows. k is a parameter of the benchmark and is tested for the values: 1, 25, 50, 75 and 100.
 
@@ -18,7 +18,7 @@ T = 98 + 0.00538 * n
 
 C++ benchmark
 
-The C++ benchmark was designed to resemble the splitOn method. The control flow of the method was simplified because it incurs no performance overhead and does not influence the correctness of the results for the arguments benchmarked. What’s more, String was used instead of ByteArray and StringBuilder, which might have a negative effect on performance. The basic runtime of the C++ implementation is 81 ms, which is higher than the Java one. This might be caused by using String. The results for the parameterised benchmark are presented below:
+The C++ benchmark was designed to resemble the splitOn method. The control flow of the method was simplified because it incurs no performance overhead and does not influence the correctness of the results for the arguments benchmarked. Additionally, String was used instead of ByteArray and StringBuilder, which might have a negative effect on performance. The basic runtime of the C++ implementation is 81 ms, which is higher than the Java one. This might be caused by using String. The results for the parameterised benchmark are presented below:
 1. k=1, T=115
 2. k=25, T=220
 3. k=50, T=302
