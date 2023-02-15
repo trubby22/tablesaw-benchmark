@@ -29,7 +29,7 @@ public class MyBenchmark2 {
   private Table input;
   private Summarizer summarizer;
   private Table highestCaseloadByDay;
-  @Param({"1", "25", "50", "75", "100"})
+  @Param({"0", "1", "25", "50", "75", "100"})
   public int percentage;
 
   public static void main(String[] args) throws RunnerException {
@@ -126,7 +126,9 @@ public class MyBenchmark2 {
               .columnTypes(types).build())
           .retainColumns("iso_code", "date", "new_cases_per_million");
 
-      input = splitBins(input, percentage);
+      if (percentage != 0) {
+        input = splitBins(input, percentage);
+      }
 
       AnalyticQuery
           .query()
