@@ -21,7 +21,8 @@ static void HypothesisBenchmark(benchmark::State& state) {
   }
 }
 BENCHMARK_WITH_UNIT(HypothesisBenchmark, benchmark::kMillisecond)
-    ->Arg(1)->Arg(25)->Arg(50)->Arg(75)->Arg(100); // NOLINT
+    ->Arg(1)->Arg(25)->Arg(50)->Arg(75)->Arg(100)
+    ->Iterations(5); // NOLINT
 
 BENCHMARK_MAIN();
 
