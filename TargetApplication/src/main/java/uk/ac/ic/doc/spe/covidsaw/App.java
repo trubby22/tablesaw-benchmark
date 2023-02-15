@@ -17,6 +17,8 @@ public class App {
     private static boolean offline = true; // set to false to live-download dataset
 
     public static void main(String[] args) {
+      System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
         try {
             ColumnType[] types = {
                 ColumnType.STRING,     // 0     iso_code

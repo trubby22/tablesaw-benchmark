@@ -33,6 +33,8 @@ public class MyBenchmark2 {
   public int percentage;
 
   public static void main(String[] args) throws RunnerException {
+    System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
     Options opt = new OptionsBuilder()
         .include(MyBenchmark2.class.getSimpleName())
         .forks(1)
@@ -122,7 +124,7 @@ public class MyBenchmark2 {
       // make sure to download https://github.com/owid/covid-19-data/blob/master/public/data/owid-covid-data.csv?raw=true into the current directory
       input = Table.read()
           .usingOptions(CsvReadOptions
-              .builder("/Users/piotrblaszyk/Documents/university/year3/60017/courseworks/cw-1/spe-coursework-1-trubby22/owid-covid-data.csv")
+              .builder("owid-covid-data.csv")
               .columnTypes(types).build())
           .retainColumns("iso_code", "date", "new_cases_per_million");
 
