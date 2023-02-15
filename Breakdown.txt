@@ -1,1 +1,12 @@
-replace me by no more than 300 words
+The Tablesaw Java library code was tested using vTune profiler. The hotspots, microarchitecture analysis and threading tasks were run. The time taken by the whole main method to run is 8.28s. The times taken by different stages of the program are as follows:
+1. Loading: 7.29s = 7.25s (usingOptions) + 0.04s (parseRows)
+2. Smoothing: 0.19s = 0.12s (executeInPlace) + 0.07s (accept)
+3. Aggregation: 0.30s = 0.19s (by) + 0.09s (where) + 0.02s (isNotMissing)
+4. Filtering: 0.2s = 0.05s (inner) + 0.15s (indexFor)
+5. Output: unknown
+
+The main method suffers from bad speculation (10.4% of instructions) and is front-end bound (30.2% of instructions). The latter means that the micropipeline is sometimes waiting for instructions to be fetched. Within the whole program the front-end latency affects 24.0% of instructions and front-end bandwidth 12.8%. It is likely that the large codebase of the Tablesaw library causes occasional instruction cache misses (5.4% of instructions).
+
+The CPI is 0.67, which means that micropipeline stalls are quite infrequent and according to vTune this is a decent score. On average only 1.39 out of 12 logical CPUs are used so there’s room for more parallelism to speed up the execution.
+
+In conclusion, the main areas of possible improvement in the app are bad speculation, being front-end bound and little parallelism.
