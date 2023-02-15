@@ -1,7 +1,6 @@
 #include "../Source/CppBenchmark.hpp"
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include "../Source/Implementation.hpp"
 using namespace std;
 
 TEST_CASE("Check if all items in each slice.selection "

@@ -1,5 +1,4 @@
 #include "../Source/CppBenchmark.hpp"
-#include "../Source/Implementation.hpp"
 #include <benchmark/benchmark.h>
 #include <iostream>
 
