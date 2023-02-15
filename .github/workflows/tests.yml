@@ -57,7 +57,7 @@ jobs:
         run: mvn -q install
         working-directory: ${{ github.workspace }}/JavaBenchmark
       - name: "Run benchmarks"
-        run: java -jar target/benchmarks.jar -w 1 -wi 1 -r 1 -f 1 -i 5 -bm avgt -tu ns
+        run: java -jar target/benchmarks.jar -w 1 -wi 1 -r 1 -f 1 -i 5 -bm avgt -tu ms
         working-directory: ${{ github.workspace }}/JavaBenchmark
 
   generate_report:
