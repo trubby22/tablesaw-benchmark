@@ -1,17 +1,27 @@
 #include "../Source/CppBenchmark.hpp"
+#include "../Source/Implementation.hpp"
 #include <benchmark/benchmark.h>
 #include <iostream>
+
 using namespace std;
 
-static void DummyBenchmark(benchmark::State& state) {
-  auto dummy = 0;
+static void BasicBenchmark(benchmark::State& state) {
+  Implementation impl;
   for(auto _ : state) {
-    for(auto i = 0U; i < state.range(0); i++) { // NOLINT
-      dummy++;
-    }
-    benchmark::DoNotOptimize(dummy);
+    impl.split_on("date");
   }
 }
-BENCHMARK(DummyBenchmark)->Range(0, 1024); // NOLINT
+BENCHMARK_WITH_UNIT(BasicBenchmark, benchmark::kMillisecond)
+    ->Iterations(5); // NOLINT
+
+static void HypothesisBenchmark(benchmark::State& state) {
+  Implementation impl(state.range(0));
+  for(auto _ : state) {
+    impl.split_on("date");
+  }
+}
+BENCHMARK_WITH_UNIT(HypothesisBenchmark, benchmark::kMillisecond)
+    ->Arg(1)->Arg(25)->Arg(50)->Arg(75)->Arg(100); // NOLINT
 
 BENCHMARK_MAIN();
+

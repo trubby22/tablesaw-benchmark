@@ -33,8 +33,6 @@ public class MyBenchmark2 {
   public int percentage;
 
   public static void main(String[] args) throws RunnerException {
-    System.out.println("Working Directory = " + System.getProperty("user.dir"));
-
     Options opt = new OptionsBuilder()
         .include(MyBenchmark2.class.getSimpleName())
         .forks(1)

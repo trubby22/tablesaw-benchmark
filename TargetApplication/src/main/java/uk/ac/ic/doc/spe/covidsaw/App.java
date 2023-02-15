@@ -17,7 +17,6 @@ public class App {
     private static boolean offline = true; // set to false to live-download dataset
 
     public static void main(String[] args) {
-      System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
         try {
             ColumnType[] types = {
@@ -109,9 +108,12 @@ public class App {
                 .sum("new_cases_per_million")
                 .as("smoothed")
                 .executeInPlace();
-            
-            Table highestCaseloadByDay = input
-                .where(input.column("smoothed").isNotMissing())
+
+          Table interm = input
+              .where(input.column("smoothed").isNotMissing());
+          interm.write().csv("interm.csv");
+          System.out.println("row count " + interm.rowCount());
+          Table highestCaseloadByDay = interm
                 .summarize("smoothed", max).by("date");
             highestCaseloadByDay = highestCaseloadByDay
                 .where(highestCaseloadByDay.numberColumn("Max [smoothed]").isGreaterThan(0));
